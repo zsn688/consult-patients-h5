@@ -4,7 +4,7 @@ import { showToast } from 'vant'
 import router from '@/router'
 
 // 创建axios实例
-const baseURL = 'https://consult-api.itheima.net/'
+const baseURL = 'https://consult-api.itheima.net'
 const instance = axios.create({
   baseURL,
   timeout: 10000

@@ -1,7 +1,15 @@
 module.exports = {
-  plugins: ['stylelint-order'],
+  root: true,
 
-  extends: ['stylelint-config-standard'],
+  extends: [
+    'stylelint-config-standard',
+    'stylelint-config-standard-scss',
+    'stylelint-config-recommended-vue',
+    "stylelint-config-html"
+  ],
+
+  plugins: ['stylelint-order', "stylelint-scss"],
+
 
   rules: {
     // 指定声明块内属性的字母顺序
@@ -155,6 +163,8 @@ module.exports = {
     ],
 
     // 颜色值要小写 
-    'color-hex-case': 'lower','number-leading-zero': 'always',
-  },
+    'color-hex-case': 'lower', 'number-leading-zero': 'always',
+    // 伪类单冒号
+    'selector-pseudo-element-colon-notation': "single"
+  }
 };
