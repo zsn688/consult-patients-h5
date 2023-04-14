@@ -53,11 +53,14 @@ instance.interceptors.response.use(
 
 // 封装请求工具函数
 type Data<T> = {
+  success?: boolean
   code: number
-  message: string
-  data: T
+  message?: string
+  msg?: string
+  data?: T
+  result?: T
 }
-const request = <T>(url: string, method: Method, data: object) => {
+const request = <T>(url: string, method: Method, data?: object) => {
   return instance.request<T, Data<T>>({
     url,
     method,

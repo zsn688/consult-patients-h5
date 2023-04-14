@@ -15,3 +15,23 @@ export const getCodeAPI = (mobile: string, type: CodeType) => {
 export const loginByCodeAPI = (mobile: string, code: string) => {
   return request<UserInfo>('/login', 'post', { mobile, code })
 }
+
+// qq登录
+export const loginByQQAPI = (data: {
+  openId: string
+  source: string
+  nickname?: string
+  avatar?: string
+}) => {
+  return request<UserInfo>('/login/thirdparty', 'post', data)
+}
+
+// 三方登录绑定手机号
+export const bindPhoneAPI = (data: { mobile: string; code: string; openId: string }) => {
+  return request<UserInfo>('/login/binding', 'post', data)
+}
+
+// 解除绑定手机号
+export const unBindPhoneAPI = (userInfo: string) => {
+  return request<{}>(`/unbound/{${userInfo}`, 'put')
+}
