@@ -1,3 +1,4 @@
+import { useUserInfoStore } from '@/stores'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -50,6 +51,14 @@ const router = createRouter({
       component: () => import('@/views/room/index.vue')
     }
   ]
+})
+
+const whiteList = ['/login', '/register']
+// 路由守卫 whiteList不需要token可以直接访问
+router.beforeEach((to) => {
+  const store = useUserInfoStore()
+  // 没有token,并且不在whitelist内，返回login页面
+  if (!store.userInfo?.token && !whiteList.includes(to.path)) return '/login'
 })
 
 export default router
