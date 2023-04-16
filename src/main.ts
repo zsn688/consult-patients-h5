@@ -10,6 +10,14 @@ import './styles/main.scss'
 
 import 'virtual:svg-icons-register'
 
+//加载进度条
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
+NProgress.configure({
+  showSpinner: false
+})
+
 const app = createApp(App)
 
 app.use(pinia)
