@@ -26,3 +26,11 @@ body {
 a {
   color: var(--cp-text2);
 }
+
+#nprogress .bar {
+  background-color: var(--cp-primary) !important;
+}
+
+.van-cell:after {
+    border-bottom: none !important;
+  }

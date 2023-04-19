@@ -14,11 +14,10 @@ export type CodeType = 'login' | 'register' | 'changeMobile' | 'forgetPassword' 
 //个人用户详细信息
 import type { ConsultationInfo } from './consultation'
 import type { OrderInfo } from './order'
-export type UserInfoDetail = {
-  id: string
-  account: string
-  mobile: string
-  avatar: string
+
+// Pick 可以从一个对象类型中 取出某些属性
+// Omit 可以从一个对象类型中 排出某些属性 得到剩余的
+export type UserInfoDetail = Omit<UserInfo, 'token'> & {
   likeNumber: number
   collectionNumber: number
   score: number

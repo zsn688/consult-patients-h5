@@ -60,7 +60,7 @@ type Data<T> = {
   data?: T
   result?: T
 }
-const request = <T>(url: string, method: Method, data?: object) => {
+const request = <T>(url: string, method: Method = 'get', data?: object) => {
   return instance.request<T, Data<T>>({
     url,
     method,
