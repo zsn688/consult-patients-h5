@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import router from '@/router'
 import { defineProps } from 'vue'
-defineProps<{ title?: string; rightText?: string }>()
+const props = defineProps<{ title?: string; rightText?: string; openPopup?: boolean }>()
+const emit = defineEmits<{
+  (e: 'click-right'): void
+  (e: 'close-popup'): void
+}>()
 const onClickLeft = () => {
+  if (props.openPopup) return emit('close-popup')
   if (history.state.back) {
     router.back()
   } else {
     router.push('/')
   }
 }
-const emit = defineEmits<{ (e: 'click-right'): void }>()
 const onClickRight = () => {
   emit('click-right')
 }
@@ -33,9 +37,12 @@ const onClickRight = () => {
       font-size: 18px;
       color: var(--cp-text1);
     }
-
     &__text {
       font-size: 15px;
+    }
+    &__title {
+      font-size: 16px;
+      font-weight: normal;
     }
   }
 }
