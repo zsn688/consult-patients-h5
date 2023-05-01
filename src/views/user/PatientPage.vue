@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { getPatientListAPI } from '@/services/patientAPI'
+import {
+  getPatientListAPI,
+  addPatientAPI,
+  editPatientAPI,
+  delPatientAPI
+} from '@/services/patientAPI'
 import type { PatientList, PatientInfo } from '@/types/paitent'
 import { computed } from 'vue'
+import { validateName, validateIdCard } from '@/utils/validate'
+import { showToast, type FormInstance, showSuccessToast, showConfirmDialog } from 'vant'
 
 // 单选框CP5radiobtn数据
 const options = [
@@ -18,8 +25,10 @@ onMounted(async () => {
 })
 //打开弹出层
 const openPopup = ref(false)
+//添加患者信息
 const showEditPopup = () => {
   openPopup.value = true
+  isChange.value = false
   editPaitent.value = { name: '', idCard: '', gender: 1, defaultFlag: 0 }
 }
 //编辑患者信息表单数据
@@ -34,15 +43,47 @@ const defaultFlag = computed({
   }
 })
 //保存数据
-const saveFn = () => {
-  console.log(editPaitent.value)
+//保存时校验表单数据
+const infoForm = ref<FormInstance>()
+const saveFn = async () => {
+  if (!infoForm.value?.validate()) return
+
+  //性别检验， 身份证倒数第二位，单数是男，双数是女
+  const idGenderNum = +editPaitent.value.idCard.slice(-2, -1) % 2
+  if (idGenderNum === editPaitent.value.gender) {
+    // 调用接口，保存数据
+    isChange.value
+      ? await editPatientAPI(editPaitent.value)
+      : await addPatientAPI(editPaitent.value)
+
+    // console.log(res)
+    showToast({ message: '添加成功', type: 'success' })
+  } else {
+    showToast({ message: '性别和身份证上不一致，请修改', type: 'fail' })
+  }
 }
 
 //修改patient
+const isChange = ref(false)
 const changePatientFn = (value: PatientInfo) => {
-  console.log(value)
   openPopup.value = true
-  editPaitent.value = value
+  isChange.value = true
+  const { id, name, idCard, gender, defaultFlag } = value
+  editPaitent.value = { id, name, idCard, gender, defaultFlag }
+  console.log(editPaitent.value)
+}
+
+// 删除信息
+const removeFn = async () => {
+  if (editPaitent.value.id) {
+    await showConfirmDialog({
+      title: '温馨提示',
+      message: `您确认要删除 ${editPaitent.value.name} 患者信息吗 ？`
+    })
+    await delPatientAPI(editPaitent.value.id)
+    showSuccessToast('删除成功')
+    openPopup.value = false
+  }
 }
 </script>
 
@@ -80,25 +121,27 @@ const changePatientFn = (value: PatientInfo) => {
     <!-- 添加修改患者信息popup弹出层 -->
     <van-popup v-model:show="openPopup" :style="{ width: '100%', height: '100%' }" position="right">
       <cp5-nav-bar
-        title="添加患者"
+        :title="isChange ? '修改患者信息' : '添加患者信息'"
         right-text="保存"
         :openPopup="openPopup"
         @click-right="saveFn"
         @close-popup="openPopup = false"
       />
-      <van-form class="popup-form">
+      <van-form class="popup-form" ref="infoForm">
         <van-cell-group inset>
           <van-field
             name="姓名"
             label="真实姓名"
             placeholder="请输入真实姓名"
             v-model="editPaitent.name"
+            :rules="validateName"
           />
           <van-field
             name="身份证号"
             label="身份证号"
             placeholder="请输入身份证号"
             v-model="editPaitent.idCard"
+            :rules="validateIdCard"
           />
           <van-field label="性别">
             <template #input>
@@ -115,6 +158,9 @@ const changePatientFn = (value: PatientInfo) => {
           </van-field>
         </van-cell-group>
       </van-form>
+      <van-action-bar v-if="isChange">
+        <van-action-bar-button @click="removeFn">删除</van-action-bar-button>
+      </van-action-bar>
     </van-popup>
   </div>
 </template>
@@ -209,5 +255,14 @@ const changePatientFn = (value: PatientInfo) => {
 }
 .popup-form {
   padding-top: 46px;
+}
+// 底部操作栏
+.van-action-bar {
+  padding: 0 10px;
+  margin-bottom: 10px;
+  .van-button {
+    color: var(--cp-price);
+    background-color: var(--cp-bg);
+  }
 }
 </style>
